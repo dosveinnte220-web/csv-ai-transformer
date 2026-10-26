@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f7f8fb" />
+    <meta name="description" content="Transform CSV data with natural-language instructions." />
+    <title>AI CSV Transformer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="AI CSV Transformer home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32"><path d="M16 3.5 18.8 13l9.7 3-9.7 3-2.8 9.5L13.2 19l-9.7-3 9.7-3L16 3.5Z" fill="currentColor"/><path d="m25 3 1.2 4 4 1.2-4 1.2-1.2 4-1.2-4-4-1.2 4-1.2L25 3Z" fill="currentColor"/></svg>
+          </span>
+          <span class="brand-name">transform<span>ly</span></span>
+        </a>
+        <div class="topbar-right">
+          <span class="privacy-chip"><span class="privacy-dot"></span><span id="privacy-label">Private by default</span></span>
+          <a class="help-link" href="#how-it-works">How it works <span aria-hidden="true">↗</span></a>
+          <span class="avatar" aria-label="Your workspace">Y</span>
+        </div>
+      </header>
+
+      <main>
+        <section class="page-heading">
+          <div>
+            <div class="eyebrow"><span class="eyebrow-dot"></span> DATA WORKSPACE</div>
+            <h1>Make your data <span>make sense.</span></h1>
+            <p>Describe what you need. Preview every change. Keep full control.</p>
+          </div>
+          <button class="button button-outline" id="export-button" disabled>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5v9m0 0 3.3-3.3M10 11.5 6.7 8.2M3.5 13v3.2h13V13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Export CSV
+          </button>
+        </section>
+
+        <div class="workspace">
+          <aside class="sidebar">
+            <section class="panel source-panel">
+              <div class="panel-heading">
+                <span class="step-number">01</span>
+                <div><h2>Your data</h2><p>Start with a CSV file</p></div>
+              </div>
+              <div class="upload-box" id="dropzone" tabindex="0" role="button" aria-label="Upload a CSV file">
+                <input id="file-input" type="file" accept=".csv,text/csv" hidden />
+                <span class="upload-icon">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0L7.5 7.5M12 3l4.5 4.5M5 14v5h14v-5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <strong>Drop your file here</strong>
+                <span>or <button class="text-button" id="browse-button" type="button">browse files</button></span>
+                <small>CSV only · Up to 20 MB</small>
+              </div>
+              <div class="file-summary hidden" id="file-summary">
+                <span class="file-icon">
+                  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 2.5h6l4 4v11H5v-15Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M11 2.8v4h3.7M7.5 10h5M7.5 13h5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                </span>
+                <span class="file-details"><strong id="file-name"></strong><small id="file-meta"></small></span>
+                <button class="icon-button remove-file" id="remove-file" type="button" aria-label="Remove file">×</button>
+              </div>
+              <div class="source-footer"><span class="lock-icon">⌑</span> Your file stays on this device</div>
+            </section>
+
+            <section class="panel instruction-panel">
+              <div class="panel-heading">
+                <span class="step-number">02</span>
+                <div><h2>Tell us what to do</h2><p>Use plain language</p></div>
+              </div>
+              <label class="sr-only" for="instruction">Describe a transformation</label>
+              <textarea id="instruction" placeholder="e.g. Remove duplicate customers based on email…" rows="4"></textarea>
+              <div class="prompt-footer">
+                <span class="prompt-hint"><span aria-hidden="true">✦</span> Be specific for best results</span>
+                <span class="char-count" id="char-count">0/500</span>
+              </div>
+              <button class="button button-primary plan-button" id="plan-button" disabled>
+                <span class="button-sparkle" aria-hidden="true">✦</span>
+                <span id="plan-button-label">Generate plan</span>
+                <span class="button-arrow" aria-hidden="true">→</span>
+              </button>
+              <div class="examples">
+                <div class="examples-label">TRY AN EXAMPLE</div>
+                <button class="example-chip" data-prompt="Remove duplicate customers based on email">Remove duplicate customers</button>
+                <button class="example-chip" data-prompt="Combine first_name and last_name into full_name">Combine first + last name</button>
+                <button class="example-chip" data-prompt="Create a profit column by subtracting cost from revenue">Calculate profit column</button>
+              </div>
+            </section>
+
+            <div class="sidebar-note"><span aria-hidden="true">✧</span> Changes are always previewed before they’re applied.</div>
+          </aside>
+
+          <section class="main-column" aria-label="Data preview and transformation">
+            <section class="panel data-panel">
+              <div class="data-toolbar">
+                <div class="data-title">
+                  <span class="table-icon" aria-hidden="true"><svg viewBox="0 0 20 20"><rect x="2.5" y="3" width="15" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2.8 7.5h14.4M7.5 7.7v9M12.5 7.7v9" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></span>
+                  <div><h2 id="dataset-title">Your dataset</h2><span id="dataset-subtitle">Upload a CSV to get started</span></div>
+                </div>
+                <div class="toolbar-actions">
+                  <button class="icon-button" id="undo-button" type="button" aria-label="Undo" title="Undo" disabled>↶</button>
+                  <button class="icon-button" id="redo-button" type="button" aria-label="Redo" title="Redo" disabled>↷</button>
+                  <span class="toolbar-divider"></span>
+                  <button class="button button-small button-outline" id="reset-button" disabled>Reset</button>
+                </div>
+              </div>
+              <div class="data-stats hidden" id="data-stats">
+                <span><b class="stat-indicator purple"></b><strong id="row-count">0</strong> rows</span>
+                <span><b class="stat-indicator blue"></b><strong id="column-count">0</strong> columns</span>
+                <span class="data-file-label" id="data-file-label"></span>
+              </div>
+              <div class="table-wrap" id="table-wrap">
+                <div class="empty-state" id="empty-state">
+                  <div class="empty-illustration">
+                    <div class="empty-sheet"><span></span><span></span><span></span><span></span></div>
+                    <span class="empty-spark">✦</span>
+                  </div>
+                  <h3>Your data, ready for a little magic</h3>
+                  <p>Upload a CSV file to explore your data and start making changes with simple instructions.</p>
+                  <button class="button button-primary empty-upload" id="empty-upload-button"><span>Upload a CSV</span><span aria-hidden="true">↑</span></button>
+                  <span class="empty-or">or try a <button id="sample-button" class="text-button">sample dataset</button></span>
+                </div>
+                <table id="data-table" class="hidden" aria-label="CSV data preview">
+                  <thead id="table-head"></thead>
+                  <tbody id="table-body"></tbody>
+                </table>
+              </div>
+              <div class="table-footer hidden" id="table-footer"><span id="table-range"></span><span>Preview shows up to 50 rows</span></div>
+            </section>
+
+            <section class="plan-panel panel hidden" id="plan-panel" aria-live="polite">
+              <div class="plan-header">
+                <div class="plan-heading">
+                  <span class="plan-spark">✦</span>
+                  <div><h2>Transformation preview</h2><p id="plan-summary">Review these changes before applying.</p></div>
+                </div>
+                <button class="icon-button" id="dismiss-plan" aria-label="Dismiss preview">×</button>
+              </div>
+              <div class="operation-list" id="operation-list"></div>
+              <div class="preview-impact" id="preview-impact"></div>
+              <div class="plan-actions">
+                <button class="button button-quiet" id="cancel-plan">Cancel</button>
+                <button class="button button-primary" id="apply-button">Apply changes <span aria-hidden="true">→</span></button>
+              </div>
+            </section>
+          </section>
+        </div>
+
+        <section class="how-section" id="how-it-works">
+          <div><span class="eyebrow">SIMPLE BY DESIGN</span><h2>A better way to work with data.</h2></div>
+          <div class="how-grid">
+            <article><span class="how-number">01</span><h3>Bring your CSV</h3><p>Your file is read locally in your browser. Nothing is uploaded.</p></article>
+            <article><span class="how-number">02</span><h3>Say what you need</h3><p>Describe edits naturally. We turn your request into a clear, reviewable plan.</p></article>
+            <article><span class="how-number">03</span><h3>Preview, then apply</h3><p>Review the result, undo whenever you want, and export your clean CSV.</p></article>
+          </div>
+        </section>
+      </main>
+      <footer><span>transformly</span><span>Thoughtful tools for better data.</span><span>Made for the messy middle.</span></footer>
+      <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    </div>
+  </body>
+</html>
